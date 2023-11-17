@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import { Routes, Route, Link, useMatch, useNavigate } from "react-router-dom"
+import { useField } from "../hooks"
 
 const Menu = () => {
   const padding = {
@@ -82,51 +83,47 @@ const Footer = () => (
 )
 
 const CreateNew = (addNew) => {
-  const [content, setContent] = useState("")
-  const [author, setAuthor] = useState("")
-  const [info, setInfo] = useState("")
+  const {reset: cReset, ...content} = useField("content")
+  const {reset: aReset, ...author} = useField("author")
+  const {reset: iReset, ...info} = useField("info")
   const navigate = useNavigate()
 
   const handleSubmit = (e) => {
     e.preventDefault()
     addNew.addNew({
-      content,
-      author,
-      info,
+      content: content.value,
+      author: author.value,
+      info: info.value,
       votes: 0,
     })
     navigate("/")
   }
 
+  const handleReset = (e) => {
+    e.preventDefault()
+    cReset()
+    aReset()
+    iReset()
+  }
+
   return (
     <div>
       <h2>create a new anecdote</h2>
-      <form onSubmit={handleSubmit}>
+      <form id="form" onSubmit={handleSubmit}>
         <div>
           content
-          <input
-            name="content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          />
+          <input {...content} />
         </div>
         <div>
           author
-          <input
-            name="author"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-          />
+          <input {...author} />
         </div>
         <div>
           url for more info
-          <input
-            name="info"
-            value={info}
-            onChange={(e) => setInfo(e.target.value)}
-          />
+          <input {...info} />
         </div>
         <button>create</button>
+        <button onClick={handleReset}>reset</button>
       </form>
     </div>
   )
@@ -189,7 +186,9 @@ const App = () => {
     <div>
       <h1>Software anecdotes</h1>
       <Menu />
-      {notification && <div style={{border: '1px solid red'}}>{notification}</div>}
+      {notification && (
+        <div style={{ border: "1px solid red" }}>{notification}</div>
+      )}
       <Routes>
         <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
         <Route
