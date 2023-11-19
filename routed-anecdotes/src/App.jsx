@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { Routes, Route, Link, useMatch, useNavigate } from "react-router-dom"
-import { useField } from "../hooks"
+import { useField, useCountry } from "../hooks"
 
 const Menu = () => {
   const padding = {
@@ -16,6 +16,9 @@ const Menu = () => {
       </Link>
       <Link to="/about" style={padding}>
         about
+      </Link>
+      <Link to="/country" style={padding}>
+        country
       </Link>
     </div>
   )
@@ -83,9 +86,9 @@ const Footer = () => (
 )
 
 const CreateNew = (addNew) => {
-  const {reset: cReset, ...content} = useField("content")
-  const {reset: aReset, ...author} = useField("author")
-  const {reset: iReset, ...info} = useField("info")
+  const { reset: cReset, ...content } = useField("content")
+  const { reset: aReset, ...author } = useField("author")
+  const { reset: iReset, ...info } = useField("info")
   const navigate = useNavigate()
 
   const handleSubmit = (e) => {
@@ -125,6 +128,37 @@ const CreateNew = (addNew) => {
         <button>create</button>
         <button onClick={handleReset}>reset</button>
       </form>
+    </div>
+  )
+}
+
+const Country = () => {
+  const { reset, ...countryInput } = useField("text")
+  const [name, setName] = useState("")
+  const { country, isError } = useCountry(name)
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    setName(countryInput.value)
+  }
+
+  return (
+    <div>
+      <form onSubmit={handleSubmit}>
+        <input {...countryInput} />
+        <button>find</button>
+      </form>
+
+      {country && !isError ? (
+        <div>
+          <h3>{country?.name?.common} </h3>
+          <div>capital {country?.capital[0]} </div>
+          <div>population {country?.population}</div>
+          <div style={{width: '200px'}}>{country?.flag}</div>
+        </div>
+      ) : (
+        <div>{name} not found...</div>
+      )}
     </div>
   )
 }
@@ -197,6 +231,7 @@ const App = () => {
         />
         <Route path="/create" element={<CreateNew addNew={addNew} />} />
         <Route path="/about" element={<About />} />
+        <Route path="/country" element={<Country />} />
       </Routes>
       <Footer />
     </div>

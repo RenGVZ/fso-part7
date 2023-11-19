@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from "react"
 
 export const useField = (name) => {
   const [value, setValue] = useState("")
@@ -8,14 +8,44 @@ export const useField = (name) => {
   }
 
   const reset = () => {
-    setValue('')
+    setValue("")
   }
-
 
   return {
     name,
     value,
     onChange,
-    reset
+    reset,
   }
+}
+
+export const useCountry = (name) => {
+  const [country, setCountry] = useState(null)
+  const [isError, setIsError] = useState(false)
+
+  const url = "https://studies.cs.helsinki.fi/restcountries/api/name"
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const res = await fetch(`${url}/${name}`)
+        const data = await res.json()
+        if(res.ok) {
+          setCountry(data)
+          setIsError(false)
+        } else {
+          throw new Error(data.status)
+        }
+      } catch (error) {
+        setIsError(true)
+        setCountry(null)
+      }
+    }
+
+    if (name) {
+      getData()
+    }
+  }, [name])
+
+  return {country, isError}
 }
