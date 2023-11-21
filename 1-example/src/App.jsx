@@ -1,6 +1,58 @@
-import { Routes, Route, Link, Navigate, useMatch, useNavigate } from "react-router-dom"
+import {
+  Routes,
+  Route,
+  Link,
+  Navigate,
+  useMatch,
+  useNavigate,
+} from "react-router-dom"
 import "./App.css"
 import { useState } from "react"
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  Alert,
+  Container,
+  TableContainer,
+  Table,
+  TableBody,
+  TableRow,
+  TableCell,
+  Paper,
+  // Button,
+  TextField,
+} from "@mui/material"
+import styled from "styled-components"
+
+const Button = styled.button`
+  background: Bisque;
+  font-size: 1em;
+  margin: 1em;
+  padding: 0.25em 1em;
+  border: 2px solid Chocolate;
+  border-radius: 3px;
+`
+
+const Input = styled.input`
+  margin: 0.25em;
+`
+
+const Page = styled.div`
+  padding: 1em;
+  background: papayawhip;
+`
+
+const Navigation = styled.div`
+  background: BurlyWood;
+  padding: 1em;
+`
+
+const Footer = styled.div`
+  background: Chocolate;
+  padding: 1em;
+  margin-top: 1em;
+`
 
 const Home = () => {
   return (
@@ -37,25 +89,38 @@ const Notes = (notes) => {
   return (
     <div>
       <h2>Notes</h2>
-      {notes && notes.notes.map((note) => (
-        <li key={note.id}>
-          <Link to={`/notes/${note.id}`}>{note.content}</Link>
-        </li>
-      ))}
+
+      <TableContainer component={Paper}>
+        <Table>
+          <TableBody>
+            {notes &&
+              notes.notes.map((note) => (
+                <TableRow key={note.id}>
+                  <TableCell>
+                    <Link to={`/notes/${note.id}`}>{note.content}</Link>
+                  </TableCell>
+                  <TableCell>{note.user}</TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   )
 }
 
-const Users = () => (
-  <div>
-    <h2>TKTL notes app</h2>
-    <ul>
-      <li>Matti Luukkainen</li>
-      <li>Juha Tauriainen</li>
-      <li>Arto Hellas</li>
-    </ul>
-  </div>
-)
+const Users = () => {
+  return (
+    <div>
+      <h2>TKTL notes app</h2>
+      <ul>
+        <li>Matti Luukkainen</li>
+        <li>Juha Tauriainen</li>
+        <li>Arto Hellas</li>
+      </ul>
+    </div>
+  )
+}
 
 const Login = (onLogin) => {
   const navigate = useNavigate()
@@ -68,14 +133,19 @@ const Login = (onLogin) => {
 
   return (
     <div>
+      <h2>Login</h2>
       <form onSubmit={onSubmit}>
         <div>
-          username: <input />
+          username:
+          <Input />
         </div>
         <div>
-          password: <input type="password" />
+          password:
+          <Input type="password" />
         </div>
-        <button type="submit">Login</button>
+        <div>
+          <Button type="submit">Login</Button>
+        </div>
       </form>
     </div>
   )
@@ -102,6 +172,7 @@ const App = () => {
       user: "Arto Hellas",
     },
   ])
+  const [message, setMessage] = useState(null)
   const [user, setUser] = useState(null)
   const match = useMatch("/notes/:id")
 
@@ -111,28 +182,35 @@ const App = () => {
 
   const login = (user) => {
     setUser(user)
+    setMessage(`welcome ${user}`)
+    setTimeout(() => {
+      setMessage(null)
+    }, 10000)
   }
 
   const padding = { padding: "5px" }
 
   return (
-    <>
-      <Link to="/" style={padding}>
-        Home
-      </Link>
-      <Link to="/notes" style={padding}>
-        Notes
-      </Link>
-      {user ? (
-        <em>{user}</em>
-      ) : (
-        <Link style={padding} to="/login">
-          Login
+    <Page>
+      {message && <Alert severity="success">{message}</Alert>}
+      <Navigation>
+        <Link style={padding} to="/">
+          home
         </Link>
-      )}
-      <Link to="/users" style={padding}>
-        Users
-      </Link>
+        <Link style={padding} to="/notes">
+          notes
+        </Link>
+        <Link style={padding} to="/users">
+          users
+        </Link>
+        {user ? (
+          <em>user: {user} logged in</em>
+        ) : (
+          <Link style={padding} to="/login">
+            login
+          </Link>
+        )}
+      </Navigation>
 
       <Routes>
         <Route path="/notes/:id" element={<Note note={note} />} />
@@ -144,7 +222,7 @@ const App = () => {
         <Route path="/login" element={<Login onLogin={login} />} />
         <Route path="/" element={<Home />} />
       </Routes>
-    </>
+    </Page>
   )
 }
 
