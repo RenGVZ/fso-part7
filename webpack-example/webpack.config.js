@@ -1,23 +1,43 @@
-const path = require('path')
+const path = require("path")
+const webpack = require("webpack")
 
-const config = () => {
+const config = (env, argv) => {
+  const backend_url =
+    argv.mode === "production"
+      ? "https://notes2023.fly.dev/api/notes"
+      : "http://localhost:3001/api/notes"
   return {
-    entry: './src/index.js',
+    entry: "./src/index.js",
     output: {
-      path: path.resolve(__dirname, 'build'),
-      filename: 'main.js'
+      path: path.resolve(__dirname, "build"),
+      filename: "main.js",
     },
     module: {
       rules: [
         {
           test: /\.js$/,
-          loader: 'babel-loader',
+          loader: "babel-loader",
           options: {
-            presets: ['@babel/preset-react', '@babel/preset-env']
-          }
-        }
-      ]
-    }
+            presets: ["@babel/preset-react", "@babel/preset-env"],
+          },
+        },
+        {
+          test: /\.css$/,
+          use: ["style-loader", "css-loader"],
+        },
+      ],
+    },
+    devServer: {
+      static: path.resolve(__dirname, "build"),
+      compress: true,
+      port: 3000,
+    },
+    devtool: "source-map",
+    plugins: [
+      new webpack.DefinePlugin({
+        BACKEND_URL: JSON.stringify(backend_url),
+      }),
+    ],
   }
 }
 
