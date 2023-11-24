@@ -9,6 +9,16 @@
       "important": false,
       "content": "Mongo can save js objects",
       "id": "5a3b920a61e8c8d3f484bdd0"
+    },
+    {
+      "important": true,
+      "content": "React has a vertual DOM",
+      "id": "6a3b920a61e8c8d3f484bdd0"
+    },
+    {
+      "important": true,
+      "content": "Mongo can save js objects",
+      "id": "8a3b920a61e8c8d3f484bdd0"
     }
   ]
 }
